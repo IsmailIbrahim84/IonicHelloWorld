@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {PersonsService} from "../services/persons.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-persons',
@@ -8,6 +9,7 @@ import {PersonsService} from "../services/persons.service";
 })
 export class PersonsComponent implements OnInit {
   personsList!: string[];
+  private personListSubs: Subscription = new Subscription;
 // private personService: PersonsService;
 
   constructor( private preService: PersonsService) {
@@ -16,6 +18,9 @@ export class PersonsComponent implements OnInit {
 
   ngOnInit(): void {
     this.personsList = this.preService.persons;
+    this.personListSubs= this.preService.personsChanged.subscribe(x=>{this.personsList = x});
   }
-
+  ngOnDestroy(){
+    this.personListSubs.unsubscribe();
+  }
 }
